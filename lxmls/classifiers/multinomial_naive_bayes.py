@@ -40,7 +40,22 @@ class MultinomialNaiveBayes(lc.LinearClassifier):
         # ----------
         # Solution to Exercise 1
 
-        raise NotImplementedError("Complete Exercise 1")
+        # prior = P(y)
+        # prior is estimated as the number of documents in the class divided by the total number of documents
+        # y has shape (n_docs, 1)
+        prior = np.bincount(y.flatten(), minlength=n_classes) / len(y)
+        # prior has shape (n_classes,)
+        
+        # likelihood = P(x|y)
+        # likelihood[i, j] is estimated as the absolute frequency of the word i in the class j divided by the total number of words in class j 
+        for j in range(n_classes):
+            # we focus on the documents of class j
+            mask = (y.flatten() == j)
+            x_j = x[mask, :]  # shape: (num_docs_in_class_j, n_words)
+            # we sum the number of times each word appears in the documents of class j
+            word_counts = np.sum(x_j, axis=0)  # shape: (n_words,)
+            # adding smoothing
+            likelihood[:, j] = (word_counts + 1) / (np.sum(word_counts) + n_words)
 
         # End solution to Exercise 1
         # ----------
