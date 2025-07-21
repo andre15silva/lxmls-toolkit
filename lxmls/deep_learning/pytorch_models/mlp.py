@@ -47,12 +47,18 @@ class PytorchMLP(MLP):
         # ----------
         # Solution to Exercise 4
 
-        raise NotImplementedError("Implement Exercise 4")
+        for layer in range(self.num_layers):
+            weight, bias = self.parameters[layer]
+            tilde_z = torch.matmul(tilde_z, weight.T) + bias
+            if layer < self.num_layers - 1:
+                tilde_z = torch.sigmoid(tilde_z)
+            else:
+                tilde_z = self.log_softmax(tilde_z)
 
         # End of solution to Exercise 4
         # ----------
 
-        return log_tilde_z
+        return tilde_z
 
     def gradients(self, input, output):
         """

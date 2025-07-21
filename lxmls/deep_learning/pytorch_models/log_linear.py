@@ -1,5 +1,8 @@
+import numpy as np
+
 import torch
 
+from lxmls.deep_learning.utils import Model, glorot_weight_init
 
 class PytorchLogLinear(Model):
 

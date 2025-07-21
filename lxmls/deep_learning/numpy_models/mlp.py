@@ -95,7 +95,29 @@ class NumpyMLP(MLP):
         # ----------
         # Solution to Exercise 2
 
-        raise NotImplementedError("Implement Exercise 2")
+        # compute the error for the last (output) layer (layer N)
+        error = index2onehot(output, num_clases) - prob_y
+        errors.append(error)
+        # error.shape = B, C
+
+        # backpropagate the error through the hidden layers
+        # iterate over the hidden layers (layers N-1, N-2, ..., 1)
+        for layer in reversed(range(num_hidden_layers)):
+            weight, _ = self.parameters[layer + 1]
+            # weight.shape = H, F
+            error = np.dot(errors[-1], weight)
+            error *= (layer_inputs[layer + 1] * (1 - layer_inputs[layer + 1]))
+            errors.append(error)
+        
+        # compute the gradients
+        gradients = []
+        errors.reverse()
+        for layer in range(num_hidden_layers + 1):
+            weight, _ = self.parameters[layer]
+            error = errors[layer]
+            gradient_weight = - np.dot(error.T, layer_inputs[layer]) / num_examples
+            gradient_bias = - errors[layer].mean(axis=0)
+            gradients.append((gradient_weight, gradient_bias))
 
         # End of solution to Exercise 2
         # ----------
