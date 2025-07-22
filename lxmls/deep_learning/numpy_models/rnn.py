@@ -1,3 +1,4 @@
+from ftplib import error_reply
 import numpy as np
 from lxmls.deep_learning.rnn import RNN
 from lxmls.deep_learning.utils import index2onehot, logsumexp
@@ -85,8 +86,21 @@ class NumpyRNN(RNN):
 
         # ----------
         # Solution to Exercise 1
+        
+        error_y = (p_y - index2onehot(output, p_y.shape[1])) / nr_steps
 
-        raise NotImplementedError("Implement Exercise 1")
+        error_r = np.zeros_like(h[0, :])
+        for t in reversed(range(nr_steps)):
+            error_m_y = np.dot(W_y.T, error_y[t, :])
+            error_m_h = (error_r + error_m_y)
+            error_m_h = error_m_h * ((1 - h[t+1, :]) * h[t+1, :])
+
+            gradient_W_y += np.outer(error_y[t, :], h[t+1, :])
+            gradient_W_h += np.outer(error_m_h, h[t, :])
+            gradient_W_x += np.outer(error_m_h, z_e[t, :])
+            gradient_W_e[x[t], :] += W_x.T.dot(error_m_h)
+            error_r = np.dot(W_h.T, error_m_h)
+            
 
         # End of Solution to Exercise 1
         # ----------

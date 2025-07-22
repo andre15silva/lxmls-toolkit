@@ -93,7 +93,18 @@ class PytorchRNN(RNN):
         # ----------
         # Solution to Exercise 6.2
 
-        raise NotImplementedError("Implement Exercise 2")
+        z_e = self.embedding_layer(input)
+        h = torch.zeros(hidden_size)
+        hidden_states = []
+
+        for t in range(nr_steps):
+            z_h = torch.matmul(W_x, z_e[t, :]) + torch.matmul(W_h, h)
+            h = torch.sigmoid(z_h)
+            hidden_states.append(h)
+
+        hidden_states = torch.stack(hidden_states)
+        z_y = torch.matmul(hidden_states, W_y.T)
+        log_p_y = self.log_softmax(z_y)
 
         # End of solution to Exercise 6.2
         # ----------
