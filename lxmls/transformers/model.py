@@ -73,7 +73,9 @@ class CausalSelfAttention(nn.Module):
         # Create the projections for query, key, and value tensors
         # Note: In self-attention these are all over the same tensor x
 
-        raise NotImplementedError("Complete Exercise 2.2.1")
+        query = self.query_proj(x)
+        key = self.key_proj(x)
+        value = self.value_proj(x)
 
         # End solution to Exercise 2.2.1
         # ----------
@@ -91,11 +93,11 @@ class CausalSelfAttention(nn.Module):
 
         # Compute attention scores. The shape of scores should be (B, num_heads, T, T)
         # Hint: You can use tensor.transpose() to adapt the order of the axes.
+        scores = torch.matmul(query, key.transpose(-2, -1))
 
         # Normalize the scores by dividing by the square root of the hidden size
         # Take into account that you are using multi-head attention!
-
-        raise NotImplementedError("Complete Exercise 2.2.2")
+        scores = scores / torch.sqrt(torch.tensor(key.shape[-1]))
 
         # End solution to Exercise 2.2.2
         # ----------
@@ -110,7 +112,7 @@ class CausalSelfAttention(nn.Module):
         # Apply softmax activation to get attention weights
         # Check the correct axis for the softmax function! What should be the shape of the weights?
 
-        raise NotImplementedError("Complete Exercise 2.2.3")
+        weights = F.softmax(scores, dim=-1)
 
         # End solution to Exercise 2.2.3
         # ----------
@@ -123,7 +125,7 @@ class CausalSelfAttention(nn.Module):
 
         # Multiply attention weights with values to get attended values
 
-        raise NotImplementedError("Complete Exercise 2.2.4")
+        attended_values = torch.matmul(weights, value)
 
         # End solution to Exercise 2.2.4
         # ----------
